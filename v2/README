@@ -15,3 +15,126 @@
 └── models/                   # Modelos completos PLY
     ├── ignition_switch.ply
     └── fuel_sensor.ply
+
+Guía Completa para CloudCompare 🖥️
+Paso 1: Preparar los archivos
+
+    Ejecuta el código y captura todas las vistas
+
+    Al finalizar, tendrás una carpeta con:
+
+        Archivos CSV (coordenadas + color)
+
+        Archivos PLY (nubes de puntos visualizables)
+
+Paso 2: Abrir en CloudCompare
+
+    Descarga e instala CloudCompare:
+    www.cloudcompare.org
+
+    Abrir los archivos PLY:
+
+        Ve a File > Open
+
+        Selecciona TODOS los archivos .ply de tu carpeta
+
+        Haz clic en "Open"
+
+Paso 3: Alinear las nubes de puntos (Registro)
+
+    Selecciona dos nubes para alinear (ej: switch_0.ply y switch_1.ply)
+
+    Ve a Tools > Registration > Align
+
+    Método manual (puntos de referencia):
+
+        Haz clic en "Pick points" en ambas ventanas
+
+        Selecciona 3-4 puntos idénticos en ambas nubes (ej: esquinas de la pieza)
+
+        Ejemplo:
+        text
+
+        switch_0.ply → Punto A, B, C
+        switch_1.ply → Punto A, B, C (mismos puntos físicos)
+
+    Haz clic en "Align"
+
+    Repite con todas las nubes (siempre respecto a la primera)
+
+Paso 4: Fusión de nubes
+
+    Selecciona TODAS las nubes alineadas (Ctrl + Click)
+
+    Ve a Edit > Merge
+
+    Nombra la nube fusionada (ej: switch_completo)
+
+Paso 5: Limpieza y exportación
+
+    Eliminar fondo:
+
+        Usa la herramienta "Segment" para eliminar puntos de la cartulina
+
+    Reducción de ruido:
+
+        Tools > Clean > Noise filter (radio: 0.01, umbral: 1.0)
+
+    Exportar resultado final:
+
+        File > Save
+
+        Formato recomendado: PLY (conserva colores)
+
+Visualización de Capturas durante el Proceso 👀
+
+El código incluye una mejora clave:
+python
+
+# Visualizar cada captura inmediatamente después de tomarla
+o3d.visualization.draw_geometries([filtered_pcd], 
+                                  window_name=f"Captura {i+1}/{NUM_CAPTURES}")
+
+Qué verás y qué hacer:
+
+    Aparecerá una ventana con la nube de puntos de ESA captura
+
+    Verifica:
+
+        ¿Se ve la pieza completa?
+
+        ¿Hay mucho ruido o puntos no deseados?
+
+        ¿El color se ve correcto?
+
+    Controles básicos:
+
+        Raton + arrastrar: Rotar
+
+        Rueda del ratón: Zoom
+
+        Ctrl + ratón: Mover
+
+    Cierra la ventana para continuar con la siguiente captura
+
+Flujo de Trabajo Recomendado 🔄
+
+    Primera prueba con 4 capturas (90° entre cada una)
+
+        Verifica que las nubes se alineen bien en CloudCompare
+
+    Ajusta parámetros si es necesario:
+
+        MIN_DIST/MAX_DIST: Para eliminar fondo
+
+        OUTLIER_REMOVAL: Para reducir ruido (0.1 = poco, 1.0 = mucho)
+
+    Captura final con 12-16 vistas (30°-22.5° entre capturas)
+
+    Al finalizar:
+
+        Abre los PLY en CloudCompare
+
+        Alinea manualmente
+
+        Fusiona y exporta el modelo completo
