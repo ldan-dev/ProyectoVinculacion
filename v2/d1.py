@@ -29,8 +29,8 @@ try:
     os.makedirs(PART_NAME, exist_ok=True)
     
     for i in range(NUM_CAPTURES):
-        print(f"\n📸 Preparando captura {i+1}/{NUM_CAPTURES}")
-        print(f"⏱ Tienes {WAIT_TIME} segundos para girar la pieza...")
+        print(f"\n Preparando captura {i+1}/{NUM_CAPTURES}")
+        print(f" Tienes {WAIT_TIME} segundos para girar la pieza...")
         
         # Espera para girar la pieza
         time.sleep(WAIT_TIME)
