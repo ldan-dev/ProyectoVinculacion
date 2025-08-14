@@ -1,0 +1,83 @@
+Cómo usarlo (resumen)
+
+    Coloca una cartulina lisa detrás del objeto (idealmente contrasta con la pieza).
+    Ajusta z_min_m y z_max_m a tu distancia real (por ejemplo, 0.30 a 0.70 m).
+    Ajusta captures_per_object a 10 (o lo que necesites).
+    Ejecuta: python capture_realsense_pointcloud.py
+    El script:
+        Calienta la cámara unos segundos.
+        Te dará una cuenta regresiva en cada captura para mover el objeto.
+        Guardará PLY y CSV por captura, p. ej., captures/switch/switch_01.ply y switch_01.csv.
+        Al final te mostrará cada nube en pantalla para revisión.
+
+Notas prácticas para capturar piezas (motor, electrónicos)
+
+    Fondo: cartulina mate y uniforme (azul/verde). Evita patrones o brillos.
+    Iluminación: difusa y pareja (evita sombras duras). Una lámpara con papel mantequilla ayuda.
+    Distancia: mantén la pieza estable dentro de z_min_m–z_max_m. Para D435/D455, 0.30–0.70 m suele ir bien para detalle medio. Ajusta si ves huecos.
+    Movimiento entre capturas: rota/traslada el objeto a mano entre cada toma para cubrir todas las caras (10 vistas suele bastar).
+    Superficies brillantes/cromadas: inclina la pieza o ponle un spray mate temporal (si es posible/permitido) para reducir huecos.
+    Componentes electrónicos: Evita brillos en PCBs. Si hay muchos vacíos, baja z_max_m o activa filtros (usa_realsense_filters=True ya viene activo).
+    Manos: intenta sujetar la pieza por zonas pequeñas y luego, en CloudCompare, segmenta para eliminar tu mano si sale.
+
+Qué hay en el CSV
+
+    Columnas: x, y, z en metros, r, g, b en 0–255.
+    Cada archivo es una vista. Si quieres un solo “switch.csv” final, puedes concatenar todos después de registrar/fusionar (o exportar desde CloudCompare).
+
+Proceso en CloudCompare para unir las nubes
+
+    Importar
+
+    Archivo > Abrir… y selecciona tus PLY (ej. switch_01.ply … switch_10.ply).
+    Si alguna nube trae ruido del fondo, puedes usar Segment para recortarla.
+
+    Preprocesado rápido por nube
+
+    Opcional: Tools > Clean > Remove isolated points (Statistical) para quitar restos.
+    Normales: Tools > Normals > Compute. Radio de 1–2 cm (0.01–0.02 m) suele ayudar al ICP punto-a-plano.
+
+    Alineación gruesa (picking de puntos)
+
+    Elige una nube “base” (referencia).
+    Registration > Align (point pairs picking).
+    En la ventana: activa “Aligned” y “Reference”, y en ambas nubes marca 3–6 puntos correspondientes (esquinas, tornillos, marcas).
+    Click “Align” para calcular la transformación inicial. Aplica y cierra.
+    Repite con cada nube respecto a la referencia (o incremental, pero mejor a la misma referencia).
+
+    Alineación fina (ICP)
+
+    Selecciona la nube movible y la referencia (primero la movible, luego la de referencia).
+    Tools > Registration > ICP.
+    Desactiva “Adjust scale”. Usa “Point-to-plane” si calculaste normales.
+    Ejecuta. Repite para cada par hasta que todas estén bien registradas.
+
+    Fusión
+
+    En el árbol, selecciona todas las nubes ya alineadas.
+    Edit > Merge.
+    Obtendrás una nube fusionada (más densa y completa).
+
+    Limpieza final (opcional)
+
+    Tools > Clean > Remove duplicated points; Remove isolated points.
+    Tools > Subsample si necesitas bajar densidad sin perder forma (Spatial/Octree).
+    Guarda: Archivo > Guardar… (PLY o LAS). Si quieres CSV, también puedes exportar con XYZRGB.
+
+    Verificación
+
+    Mide con Tools > Measurement si necesitas distancias.
+    Si ves drift o desalineación, repite picking de puntos en zonas bien definidas y re-ICP.
+
+Tips de operación sin turntable
+
+    Haz un “circuito” manual: captura frontal, gira ~30–45°, captura, repite alrededor. Luego inclina para capturar parte superior/inferior.
+    Mantén la pieza lo más quieta posible durante la cuenta regresiva y la captura.
+    Mantén la distancia aproximadamente constante (dentro de z_min_m–z_max_m).
+
+Ajustes finos si ves “basura”
+
+    Aumenta z_min_m o baja z_max_m para recortar fondo.
+    Activa o refuerza filtros de RealSense (ya vienen activados): sube decimation_magnitude a 3, o baja temporal_alpha si “arrastra” ruido.
+    Endurece la limpieza SOR: baja sor_std_ratio a 1.0–1.5 (quitará más puntos aislados).
+    Usa cartulina más grande o acerca la pieza al centro del frame.
