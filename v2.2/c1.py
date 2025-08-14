@@ -17,7 +17,7 @@ Salida por captura:
     - <output_dir>/<object_name>_<nn>.csv    (x,y,z,r,g,b)
 Al final: visualiza cada PLY capturado.
 
-Autor: tú :)
+Autor: ldan
 """
 
 import os
@@ -32,18 +32,53 @@ import open3d as o3d
 # =========================
 # Parámetros editables
 # =========================
-object_name = "switch"              # Nombre de la pieza u objeto (se usa en el nombre de archivos)
+object_name = "trofeo"              # Nombre de la pieza u objeto (se usa en el nombre de archivos)
 output_dir = "./captures"           # Carpeta donde se guardarán las capturas
 captures_per_object = 10            # Número de capturas que harás por objeto
-pause_seconds = 2.0                 # Pausa entre capturas (para mover el objeto a mano)
+pause_seconds = 4.0                 # Pausa entre capturas (para mover el objeto a mano)
+
+# ====================
+# cambiar segun tamaño objeto
+# =====================
+
+# Resolución/FPS (válidos para la mayoría de D4xx). Si te va lento, baja a 640x480.
 
 # Resolución/FPS (válidos para la mayoría de D4xx). Si te va lento, baja a 640x480.
 color_width, color_height, color_fps = 640, 480, 30
 depth_width, depth_height, depth_fps = 640, 480, 30
 
 # Filtros por distancia (metros) para quitar “basura” muy lejana/cercana
-z_min_m = 0.30                      # distancia mínima
-z_max_m = 0.70                      # distancia máxima (ajústalo a tu montaje)
+z_min_m = 0.10 # 0.4 en mesa esquina                     # distancia mínima
+z_max_m = 0.60                      # distancia máxima (ajústalo a tu montaje)
+max_xy_radius_m = None              # opcional: recortar por radio lateral sqrt(x^2 + y^2); None para desactivar (p. ej. 0.30)
+
+# Limpieza de outliers (Open3D) para quitar puntos aislados
+sor_nb_neighbors = 20               # vecinos para Statistical Outlier Removal
+sor_std_ratio = 0.50                 # cuanto menor, más agresivo
+
+# Warmup: descarta frames iniciales (autoexposición/autoajuste)
+warmup_frames = 30
+
+# Activar filtros de post-proceso de RealSense (suavizan/llenan agujeros)
+use_realsense_filters = True
+decimation_magnitude = 2            # 2, 3... reduce resolución de profundidad (menos ruido)
+spatial_alpha = 0.5                 # 0–1
+spatial_delta = 20                  # 1–50
+spatial_magnitude = 2               # 1–5
+temporal_alpha = 0.4                # 0–1
+temporal_delta = 20                 # 1–100
+hole_filling_mode = 1               # 0:desact, 1:nearest, 2:farther
+
+"""
+OBJETOS GRANDES:
+    
+# Resolución/FPS (válidos para la mayoría de D4xx). Si te va lento, baja a 640x480.
+color_width, color_height, color_fps = 640, 480, 30
+depth_width, depth_height, depth_fps = 640, 480, 30
+
+# Filtros por distancia (metros) para quitar “basura” muy lejana/cercana
+z_min_m = 0.10 # 0.4 en mesa esquina                     # distancia mínima
+z_max_m = 0.60                      # distancia máxima (ajústalo a tu montaje)
 max_xy_radius_m = None              # opcional: recortar por radio lateral sqrt(x^2 + y^2); None para desactivar (p. ej. 0.30)
 
 # Limpieza de outliers (Open3D) para quitar puntos aislados
@@ -62,7 +97,7 @@ spatial_magnitude = 2               # 1–5
 temporal_alpha = 0.4                # 0–1
 temporal_delta = 20                 # 1–100
 hole_filling_mode = 1               # 0:desact, 1:nearest, 2:farther
-
+"""
 
 # =========================
 # Utilidades
