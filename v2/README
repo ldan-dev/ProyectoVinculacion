@@ -1,4 +1,4 @@
-📂 proyecto_automotriz/
+📂 proyectoVinculacion/
 ├── database/
 │   ├── auto_parts.db         # SQLite con metadatos
 │   └── parquet_files/        # Datos 3D comprimidos
