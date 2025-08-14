@@ -1,0 +1,17 @@
+📂 proyecto_automotriz/
+├── database/
+│   ├── auto_parts.db         # SQLite con metadatos
+│   └── parquet_files/        # Datos 3D comprimidos
+│       ├── ignition_switch.parquet
+│       ├── fuel_sensor.parquet
+│       └── ...
+├── raw_data/                 # Datos crudos
+│   ├── switch/
+│   └── sensor/
+├── scripts/
+│   ├── capture.py            # Script de captura
+│   ├── ply_to_parquet.py     # Conversión
+│   └── database_utils.py     # Funciones DB
+└── models/                   # Modelos completos PLY
+    ├── ignition_switch.ply
+    └── fuel_sensor.ply
