@@ -16,6 +16,15 @@
     ├── ignition_switch.ply
     └── fuel_sensor.ply
 
+📂 switch/
+├── switch_0.csv
+├── switch_0.ply
+├── switch_1.csv
+├── switch_1.ply
+├── ...
+└── switch_11.ply
+📄 switch_completo.ply  # Exportado desde CloudCompare
+
 Guía Completa para CloudCompare 🖥️
 Paso 1: Preparar los archivos
 
